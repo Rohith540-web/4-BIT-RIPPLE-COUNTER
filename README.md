@@ -23,41 +23,46 @@ In timing diagram Q0 is changing as soon as the negative edge of clock pulse is 
 ![image](https://github.com/naavaneetha/4-BIT-RIPPLE-COUNTER/assets/154305477/85e1958a-2fc1-49bb-9a9f-d58ccbf3663c)
 
 **Procedure**
+1.Increment count on each positive edge of the clock. 
+2.Reset count to zero when it reaches 15. 
+3.Generate clock signal (clk). 
+4.Instantiate the RippleCounter module. 
+5.Conduct functional testing by displaying the count at each clock cycle for 16 cycles.
 
-/* write all the steps invloved */
 
 **PROGRAM**
 
 ```
-module ripple_counter (
-    input clk,       
-    input rst,        
-    output [3:0] count  
+module ripple (
+input clk,    
+input reset,   
+output [3:0] q 
 );
+// Internal signals for flip-flops
+reg [3:0] q_int;
 
 
-    reg q0, q1, q2, q3;
-    
-   
-    always @(posedge clk or posedge rst) begin
-        if (rst) begin
-           
-            q0 <= 0;
-            q1 <= 0;
-            q2 <= 0;
-            q3 <= 0;
-        end else begin
-           
-            q0 <= ~q0; 
-            q1 <= q0 ? ~q1 : q1; 
-            q2 <= q1 ? ~q2 : q2; 
-            q3 <= q2 ? ~q3 : q3; 
+assign q = q_int;
+
+always @(posedge clk or posedge reset) begin
+    if (reset) 
+        q_int[0] <= 1'b0; 
+    else 
+        q_int[0] <= ~q_int[0];
+end
+
+
+genvar i;
+generate
+    for (i = 1; i < 4; i = i + 1) begin : ripple
+        always @(posedge q_int[i-1] or posedge reset) begin
+            if (reset) 
+                q_int[i] <= 1'b0; 
+            else 
+                q_int[i] <= ~q_int[i]; 
         end
     end
-
-   
-    assign count = {q3, q2, q1, q0}; 
-
+endgenerate
 endmodule
 
 ```
@@ -66,11 +71,15 @@ endmodule
 
 **RTL LOGIC FOR 4 Bit Ripple Counter**
 
-![Screenshot 2024-12-16 204534](https://github.com/user-attachments/assets/ddca352d-d138-4a05-8be4-917fb8665865)
+
+![Screenshot 2024-12-26 184743](https://github.com/user-attachments/assets/d5564d3d-089c-4d33-80db-154cf8ff34d5)
+
+
 
 **TIMING DIGRAMS FOR 4 Bit Ripple Counter**
 
-![Screenshot (67)](https://github.com/user-attachments/assets/104472a3-916f-479d-9efa-e40a4fdd80eb)
+
+![Screenshot (80)](https://github.com/user-attachments/assets/0f09222c-c54d-4dda-9354-27ad75ca2f7b)
 
 
 **RESULTS**
